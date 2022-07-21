@@ -7,6 +7,14 @@ create a countdown
 display moves on the screen
 check if user pressed the correct buttons 
 if correct, continue. if not, end game
+
+HACKS AND TWEAKS 
+
+make each level more complex by adding more dance moves 
+
+play against a friend 
+
+
 """
 
 
