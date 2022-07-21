@@ -1,4 +1,4 @@
-import pgzrun
+import pgzrun, time
 from random import randint
 """
 In this game, the dancer performs a sequence of moves and you need to repeat them using your arrow keys 
@@ -16,8 +16,6 @@ play against a friend
 
 
 """
-
-
 #CONSTANTS
 WIDTH = 800
 HEIGHT = 600
@@ -28,15 +26,18 @@ move_list = [] #contain the dance moves
 display_list = []
 
 score = 0
+score2 = 0
 current_move = 0
 count = 4
 dance_length = 4
+level = 0
 
 #flags
 say_dance = False
 show_countdown = True
 moves_complete = False
 game_over = False
+player1_turn = True
 
 #add the actors
 dancer = Actor('dancer-start')
@@ -68,16 +69,22 @@ def draw():
         right.draw()
         left.draw()
 
-        screen.draw.text('Score: {}'.format(score),color='black',topleft=(10,10))
-
+        screen.draw.text('Player 1 Score: {}'.format(score),color='black',topleft=(WIDTH-150,10))
+        screen.draw.text('Player 2 Score: {}'.format(score2), color='black', topleft=(10, 10))
+        screen.draw.text('Level: {}'.format(level), color='black', topleft=(CENTER_X-25,10))
         if say_dance:
             screen.draw.text('Dance!', color='black',topleft=(CENTER_X-65,150),fontsize=60)
         if show_countdown:
             screen.draw.text('{}'.format(count), color='black',topleft=(CENTER_X-8,150),fontsize=60)
+        if player1_turn: #i believe its because when the flag changes it is after generate move is called
+            screen.draw.text('Player 2 Turn', color='black', topleft=(50,100),fontsize=60)
+        else:
+            screen.draw.text('Player 1 Turn', color='black', topleft=(CENTER_X+100, 100), fontsize=60)
     else:
         screen.clear()
         screen.blit('stage',(0,0))
-        screen.draw.text("Score: " + str(score), color="black", topleft=(10, 10))
+        screen.draw.text('Player 1 Score: {}'.format(score), color='black', topleft=(WIDTH - 150, 10))
+        screen.draw.text('Player 2 Score: {}'.format(score2), color='black', topleft=(10, 10))
         screen.draw.text("GAME OVER!", color="black",topleft=(CENTER_X - 130, 220), fontsize=60)
     return
 
@@ -137,9 +144,12 @@ def display_moves():
     return
 
 def generate_moves():
-    global move_list, display_list, show_countdown, count,say_dance
+    global move_list, display_list, show_countdown, count,say_dance, level, dance_length, player1_turn
     rand_num = 0
-    count = 4
+    #print("the level is {} and the dance_length {}".format(level, dance_length))
+
+    if player1_turn:
+        dance_length = dance_length + level
     move_list = []
     say_dance = False
     for index in range(dance_length):
@@ -149,6 +159,11 @@ def generate_moves():
     show_countdown = True
     countdown()
     print('move_list={}'.format(move_list))
+    if player1_turn:
+        level+=1
+        player1_turn = False
+    else:
+        player1_turn = True
     return
 
 def countdown():
@@ -170,7 +185,7 @@ def next_move():
     return
 
 def on_key_up(key):
-    global score,game_over,move_list,current_move
+    global score,game_over,move_list,current_move,score2
     if key == keys.UP:
         update_dancer(0)
         if move_list[current_move] == 0:
@@ -196,6 +211,35 @@ def on_key_up(key):
         update_dancer(3)
         if move_list[current_move] == 3:
             score +=1
+            next_move()
+        else:
+            game_over = True
+
+    if key == keys.W:
+        update_dancer(0)
+        if move_list[current_move] == 0:
+            score2 +=1
+            next_move()
+        else:
+            game_over = True
+    if key == keys.D:
+        update_dancer(1)
+        if move_list[current_move] == 1:
+            score2 +=1
+            next_move()
+        else:
+            game_over = True
+    if key == keys.S:
+        update_dancer(2)
+        if move_list[current_move] == 2:
+            score2 +=1
+            next_move()
+        else:
+            game_over = True
+    if key == keys.A:
+        update_dancer(3)
+        if move_list[current_move] == 3:
+            score2 +=1
             next_move()
         else:
             game_over = True
